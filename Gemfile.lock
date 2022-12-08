@@ -1,0 +1,27 @@
+PATH
+  remote: .
+  specs:
+    timex_datalink_crt (0.1.0)
+      ruby-sdl2 (~> 0.3.5)
+      timex_datalink_client (~> 0.7.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    crc (0.4.2)
+    ffi (1.15.5)
+    ruby-sdl2 (0.3.5)
+    rubyserial (0.6.0)
+      ffi (~> 1.9, >= 1.9.3)
+    timex_datalink_client (0.7.0)
+      crc (~> 0.4.2)
+      rubyserial (~> 0.6.0)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  timex_datalink_crt!
+
+BUNDLED WITH
+   2.3.21
