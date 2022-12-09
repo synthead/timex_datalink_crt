@@ -8,18 +8,14 @@ class TimexDatalinkCrt
   COLOR_BACKGROUND = [0, 0, 0]
   COLOR_DATA = [255, 255, 255]
 
-  TICKS_FOR_NEXT_FRAME = 1000 / 60
-
   BYTE_1_POSITION_PERCENT = 0.1
   BYTE_2_POSITION_PERCENT = 0.6
   LINE_SPACING_PERCENT = 0.031
   LINE_WIDTH_PERCENT = 0.01
 
-  attr_accessor :line_position, :last_present
+  attr_accessor :line_position
 
   def initialize
-    self.last_present = 0
-
     SDL2.init(SDL2::INIT_VIDEO)
 
     renderer
@@ -66,10 +62,6 @@ class TimexDatalinkCrt
   end
 
   def present_on_next_frame(&block)
-    while SDL2.get_ticks - last_present < TICKS_FOR_NEXT_FRAME
-      SDL2.delay(1)
-    end
-
     renderer.draw_color = COLOR_BACKGROUND
     renderer.clear
 
@@ -77,8 +69,6 @@ class TimexDatalinkCrt
     block.call if block
 
     renderer.present
-
-    self.last_present = SDL2.get_ticks
   end
 
   def byte_1_position
