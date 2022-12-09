@@ -12,7 +12,8 @@ class TimexDatalinkCrt
 
   BYTE_1_POSITION_PERCENT = 0.1
   BYTE_2_POSITION_PERCENT = 0.6
-  LINE_SPACING_PERCENT = 0.03
+  LINE_SPACING_PERCENT = 0.031
+  LINE_WIDTH_PERCENT = 0.01
 
   attr_accessor :line_position, :last_present
 
@@ -55,7 +56,13 @@ class TimexDatalinkCrt
 
     return if state.nonzero?
 
-    renderer.draw_line(0, line_position, window_width, line_position)
+    rect = SDL2::Rect.new
+    rect.x = 0
+    rect.y = line_position
+    rect.w = window_width
+    rect.h = line_width
+
+    renderer.fill_rect(rect)
   end
 
   def present_on_next_frame(&block)
@@ -84,6 +91,10 @@ class TimexDatalinkCrt
 
   def line_spacing
     @line_spacing ||= (LINE_SPACING_PERCENT * window_height).to_i
+  end
+
+  def line_width
+    @line_width ||= (LINE_WIDTH_PERCENT * window_height).to_i
   end
 
   def window_width
