@@ -96,7 +96,7 @@ class TimexDatalinkCrt
   end
 
   def window
-    @window ||= SDL2::Window.create("Timex Datalink SDL", 0, 0, 0, 0, SDL2::Window::Flags::FULLSCREEN)
+    @window ||= SDL2::Window.create("Timex Datalink SDL", 0, 0, 0, 0, SDL2::Window::Flags::FULLSCREEN_DESKTOP)
   end
 
   def renderer
