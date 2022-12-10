@@ -119,7 +119,7 @@ class TimexDatalinkCrt
 
   def packets_with_sleep
     @packet_sleep_bytes ||= packets.map do |packet|
-      packet + [0xff] * PACKET_SLEEP_FRAMES * 2
+      packet + [nil] * PACKET_SLEEP_FRAMES * 2
     end
   end
 
