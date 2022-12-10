@@ -33,6 +33,8 @@ class TimexDatalinkCrt
     two_bytes_from_packets.each do |two_bytes|
       two_bytes.each do |byte_1, byte_2|
         present_on_next_frame do
+          return if quit_event?
+
           self.line_position = byte_1_position
           draw_byte(byte_1)
 
@@ -98,6 +100,19 @@ class TimexDatalinkCrt
     block.call if block
 
     renderer.present
+  end
+
+  def quit_event?
+    while event = SDL2::Event.poll
+      case event
+      when SDL2::Event::KeyDown
+        return true if event.scancode == SDL2::Key::Scan::ESCAPE
+      when SDL2::Event::Quit
+        return true
+      end
+    end
+
+    false
   end
 
   def packets_with_sleep
@@ -171,7 +186,7 @@ class TimexDatalinkCrt
   end
 
   def create_window
-    SDL2.init(SDL2::INIT_VIDEO)
+    SDL2.init(SDL2::INIT_VIDEO | SDL2::INIT_EVENTS)
     SDL2::TTF.init
 
     renderer
