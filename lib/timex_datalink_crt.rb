@@ -79,9 +79,7 @@ class TimexDatalinkCrt
   end
 
   def draw_title
-    text_title = "timex_datalink_crt #{VERSION}"
-
-    draw_text(font_margin, text_title)
+    draw_text(font_margin, title_text)
   end
 
   def draw_progress(two_bytes_index)
@@ -156,8 +154,12 @@ class TimexDatalinkCrt
     @font_margin ||= FONT_MARGIN_PERCENT * window_height
   end
 
+  def title_text
+    @title_text ||= "timex_datalink_crt #{VERSION}"
+  end
+
   def window
-    @window ||= SDL2::Window.create("Timex Datalink SDL", 0, 0, 0, 0, SDL2::Window::Flags::FULLSCREEN_DESKTOP)
+    @window ||= SDL2::Window.create(title_text, 0, 0, 0, 0, SDL2::Window::Flags::FULLSCREEN_DESKTOP)
   end
 
   def renderer
