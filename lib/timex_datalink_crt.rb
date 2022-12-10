@@ -47,8 +47,6 @@ class TimexDatalinkCrt
   end
 
   def draw_line(state)
-    self.line_position += line_spacing
-
     return if state.nonzero?
 
     rect = SDL2::Rect.new
@@ -58,6 +56,8 @@ class TimexDatalinkCrt
     rect.h = line_width
 
     renderer.fill_rect(rect)
+  ensure
+    self.line_position += line_spacing
   end
 
   def present_on_next_frame(&block)
