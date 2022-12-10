@@ -8,8 +8,7 @@ class TimexDatalinkCrt
   COLOR_BACKGROUND = [0, 0, 0]
   COLOR_DATA = [255, 255, 255]
 
-  BYTE_1_POSITION_PERCENT = 0.1
-  BYTE_2_POSITION_PERCENT = 0.6
+  BYTE_SPREAD_PERCENT = 0.25
   LINE_SPACING_PERCENT = 0.031
   LINE_WIDTH_PERCENT = 0.01
 
@@ -72,11 +71,15 @@ class TimexDatalinkCrt
   end
 
   def byte_1_position
-    @byte_1_position ||= (BYTE_1_POSITION_PERCENT * window_height).to_i
+    @byte_1_position ||= window_height / 2 - window_height * BYTE_SPREAD_PERCENT - byte_height / 2
   end
 
   def byte_2_position
-    @byte_2_position ||= (BYTE_2_POSITION_PERCENT * window_height).to_i
+    @byte_2_position ||= window_height / 2 + window_height * BYTE_SPREAD_PERCENT - byte_height / 2
+  end
+
+  def byte_height
+    @byte_height ||= line_spacing * 8 + line_width
   end
 
   def line_spacing
