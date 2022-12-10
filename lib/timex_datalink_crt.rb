@@ -29,14 +29,20 @@ class TimexDatalinkCrt
           self.line_position = byte_1_position
           draw_byte(byte_1)
 
-          next unless byte_2
-
           self.line_position = byte_2_position
-          draw_byte(byte_2)
+          byte_2 ? draw_byte(byte_2) : draw_byte(0xff)
         end
       end
 
-      10.times { present_on_next_frame }
+      10.times do
+        present_on_next_frame do
+          self.line_position = byte_1_position
+          draw_byte(0xff)
+
+          self.line_position = byte_2_position
+          draw_byte(0xff)
+        end
+      end
     end
   end
 
