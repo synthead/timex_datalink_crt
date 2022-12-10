@@ -19,7 +19,7 @@ class TimexDatalinkCrt
 
   PACKET_SLEEP_FRAMES = 3
 
-  attr_accessor :line_position, :packets
+  attr_accessor :packets
 
   def initialize(packets:)
     @packets = packets
@@ -35,11 +35,8 @@ class TimexDatalinkCrt
         present_on_next_frame do
           return if quit_event?
 
-          self.line_position = byte_1_position
-          draw_byte(byte_1)
-
-          self.line_position = byte_2_position
-          byte_2 ? draw_byte(byte_2) : draw_byte(0xff)
+          draw_byte(byte_1, byte_1_position)
+          draw_byte(byte_2, byte_2_position)
 
           draw_title
           draw_progress(two_bytes_index)
@@ -50,24 +47,29 @@ class TimexDatalinkCrt
     end
   end
 
-  def draw_byte(byte)
-    draw_line(0)
+  def draw_byte(byte, byte_position)
+    draw_bit(0, byte_position)
 
-    8.times { |index| draw_line(byte[index]) }
+    return unless byte
+
+    8.times do |bit_index|
+      bit = byte[bit_index]
+      bit_position = byte_position + bit_spacing * (bit_index + 1)
+
+      draw_bit(bit, bit_position)
+    end
   end
 
-  def draw_line(state)
+  def draw_bit(state, bit_position)
     return if state.nonzero?
 
     rect = SDL2::Rect.new
     rect.x = 0
-    rect.y = line_position
+    rect.y = bit_position
     rect.w = window_width
-    rect.h = line_width
+    rect.h = bit_width
 
     renderer.fill_rect(rect)
-  ensure
-    self.line_position += line_spacing
   end
 
   def draw_text(y, text)
@@ -138,15 +140,15 @@ class TimexDatalinkCrt
   end
 
   def byte_height
-    @byte_height ||= line_spacing * 8 + line_width
+    @byte_height ||= bit_spacing * 8 + bit_width
   end
 
-  def line_spacing
-    @line_spacing ||= (LINE_SPACING_PERCENT * window_height).to_i
+  def bit_spacing
+    @bit_spacing ||= (LINE_SPACING_PERCENT * window_height).to_i
   end
 
-  def line_width
-    @line_width ||= (LINE_WIDTH_PERCENT * window_height).to_i
+  def bit_width
+    @bit_width ||= (LINE_WIDTH_PERCENT * window_height).to_i
   end
 
   def window_width
