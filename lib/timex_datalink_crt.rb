@@ -7,32 +7,42 @@ require "timex_datalink_crt/version"
 class TimexDatalinkCrt
   COLOR_BACKGROUND = [0, 0, 0]
   COLOR_DATA = [255, 255, 255]
+  COLOR_FONT = [150, 150, 150]
 
   BYTE_SPREAD_PERCENT = 0.25
   LINE_SPACING_PERCENT = 0.031
   LINE_WIDTH_PERCENT = 0.01
 
+  FONT_CHARACTER_HEIGHT_PERCENT = 0.04
+  FONT_CHARACTER_WIDTH_PERCENT = 0.015
+  FONT_MARGIN_PERCENT = 0.02
+
   PACKET_SLEEP_FRAMES = 3
 
-  attr_accessor :line_position
+  attr_accessor :line_position, :packets
 
-  def initialize
-    SDL2.init(SDL2::INIT_VIDEO)
-
-    renderer
-
-    SDL2::Mouse::Cursor.hide
+  def initialize(packets:)
+    @packets = packets
   end
 
-  def draw_packets(packets)
-    packets.each do |bytes|
-      (bytes + packet_sleep_bytes).each_slice(2).each do |byte_1, byte_2|
+  def draw_packets
+    two_bytes_index = 0
+
+    create_window
+
+    two_bytes_from_packets.each do |two_bytes|
+      two_bytes.each do |byte_1, byte_2|
         present_on_next_frame do
           self.line_position = byte_1_position
           draw_byte(byte_1)
 
           self.line_position = byte_2_position
           byte_2 ? draw_byte(byte_2) : draw_byte(0xff)
+
+          draw_title
+          draw_progress(two_bytes_index)
+
+          two_bytes_index += 1
         end
       end
     end
@@ -58,6 +68,30 @@ class TimexDatalinkCrt
     self.line_position += line_spacing
   end
 
+  def draw_text(y, text)
+    font_render = font.render_solid(text, COLOR_FONT)
+    font_texture = renderer.create_texture_from(font_render)
+    font_width = text.length * font_character_width
+    x = (window_width - font_width) / 2
+    font_rect = SDL2::Rect.new(x, y, font_width, font_character_height)
+
+    renderer.copy(font_texture, nil, font_rect)
+  end
+
+  def draw_title
+    text_title = "timex_datalink_crt #{VERSION}"
+
+    draw_text(font_margin, text_title)
+  end
+
+  def draw_progress(two_bytes_index)
+    text_percent = "%2.1d" % (two_bytes_index * 100 / two_bytes_count)
+    text_progress = "#{text_percent}% complete"
+    y = window_height - font_character_height - font_margin
+
+    draw_text(y, text_progress)
+  end
+
   def present_on_next_frame(&block)
     renderer.draw_color = COLOR_BACKGROUND
     renderer.clear
@@ -68,8 +102,18 @@ class TimexDatalinkCrt
     renderer.present
   end
 
-  def packet_sleep_bytes
-    @packet_sleep_bytes ||= [0xff] * PACKET_SLEEP_FRAMES * 2
+  def packets_with_sleep
+    @packet_sleep_bytes ||= packets.map do |packet|
+      packet + [0xff] * PACKET_SLEEP_FRAMES * 2
+    end
+  end
+
+  def two_bytes_from_packets
+    @two_bytes_from_packets ||= packets_with_sleep.map { |packet| packet.each_slice(2) }
+  end
+
+  def two_bytes_count
+    @two_bytes_count ||= two_bytes_from_packets.sum(&:count)
   end
 
   def byte_1_position
@@ -100,11 +144,36 @@ class TimexDatalinkCrt
     @window_height ||= window.size.last
   end
 
+  def font_character_width
+    @font_character_width ||= FONT_CHARACTER_WIDTH_PERCENT * window_width
+  end
+
+  def font_character_height
+    @font_character_height ||= FONT_CHARACTER_HEIGHT_PERCENT * window_height
+  end
+
+  def font_margin
+    @font_margin ||= FONT_MARGIN_PERCENT * window_height
+  end
+
   def window
     @window ||= SDL2::Window.create("Timex Datalink SDL", 0, 0, 0, 0, SDL2::Window::Flags::FULLSCREEN_DESKTOP)
   end
 
   def renderer
     @renderer ||= window.create_renderer(-1, SDL2::Renderer::Flags::PRESENTVSYNC)
+  end
+
+  def font
+    @font ||= SDL2::TTF.open("vendor/Inconsolata-Light.ttf", 40)
+  end
+
+  def create_window
+    SDL2.init(SDL2::INIT_VIDEO)
+    SDL2::TTF.init
+
+    renderer
+
+    SDL2::Mouse::Cursor.hide
   end
 end
