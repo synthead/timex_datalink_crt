@@ -12,7 +12,7 @@ class TimexDatalinkCrt
   LINE_SPACING_PERCENT = 0.031
   LINE_WIDTH_PERCENT = 0.01
 
-  PACKET_SLEEP_FRAMES = 10
+  PACKET_SLEEP_FRAMES = 3
 
   attr_accessor :line_position
 
