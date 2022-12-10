@@ -12,6 +12,8 @@ class TimexDatalinkCrt
   LINE_SPACING_PERCENT = 0.031
   LINE_WIDTH_PERCENT = 0.01
 
+  PACKET_SLEEP_FRAMES = 10
+
   attr_accessor :line_position
 
   def initialize
@@ -24,23 +26,13 @@ class TimexDatalinkCrt
 
   def draw_packets(packets)
     packets.each do |bytes|
-      bytes.each_slice(2).each do |byte_1, byte_2|
+      (bytes + packet_sleep_bytes).each_slice(2).each do |byte_1, byte_2|
         present_on_next_frame do
           self.line_position = byte_1_position
           draw_byte(byte_1)
 
           self.line_position = byte_2_position
           byte_2 ? draw_byte(byte_2) : draw_byte(0xff)
-        end
-      end
-
-      10.times do
-        present_on_next_frame do
-          self.line_position = byte_1_position
-          draw_byte(0xff)
-
-          self.line_position = byte_2_position
-          draw_byte(0xff)
         end
       end
     end
@@ -74,6 +66,10 @@ class TimexDatalinkCrt
     block.call if block
 
     renderer.present
+  end
+
+  def packet_sleep_bytes
+    @packet_sleep_bytes ||= [0xff] * PACKET_SLEEP_FRAMES * 2
   end
 
   def byte_1_position
