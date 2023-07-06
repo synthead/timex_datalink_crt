@@ -35,6 +35,6 @@ crt.draw_packets
 
 # CRT display requirement
 
-**A CRT monitor is required** for the light to be emitted from this library correctly.  CRTs use electron beams that draw scan lines one-by-one from top to bottom, then it returns to the top and repeats for the next frame.  This means that the electron guns turn on when its drawing a white line, and and turn off when its drawing the black background.  This produces flashing light as the graphics are drawn, which is ultimately received by the optical sensor and decoded by the Timex Datalink device.
+**A CRT monitor is required** for the light to be emitted from this library correctly.  CRTs use electron guns that draw scan lines one-by-one from top to bottom, then they return to the top in preparation for the next frame.  This means that the electron guns turn on when they're drawing a white line, and and turn off when they're drawing the black background.  This produces flashing light as the graphics are drawn, which is ultimately received by the optical sensor and decoded by the Timex Datalink device.
 
 LCD and OLED monitors will not work because each frame is drawn almost instantaneously without an electron beam, so the picture does not "flash" as it is drawn like a CRT.  Don't have a CRT monitor?  You can still write data to your Timex Datalink devices with [a USB Notebook Adapter emulator made from a Teensy LC](https://github.com/synthead/timex-datalink-arduino)!
