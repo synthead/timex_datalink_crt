@@ -16,14 +16,26 @@ This library consumes packets compiled with [timex\_datalink\_client](https://gi
 require "timex_datalink_client"
 require "timex_datalink_crt"
 
-time1 = Time.now
-time2 = time1.dup.utc
+time_local = Time.now
+time_utc = time_local.dup.utc
 
 models = [
   TimexDatalinkClient::Protocol3::Sync.new,
   TimexDatalinkClient::Protocol3::Start.new,
-  TimexDatalinkClient::Protocol3::Time.new(zone: 1, is_24h: false, date_format: 2, time: time1),
-  TimexDatalinkClient::Protocol3::Time.new(zone: 2, is_24h: true, date_format: 2, time: time2),
+
+  TimexDatalinkClient::Protocol3::Time.new(
+    zone: 1,
+    time: time_local,
+    is_24h: false,
+    date_format: "%y-%m-%d"
+  ),
+  TimexDatalinkClient::Protocol3::Time.new(
+    zone: 2,
+    time: time_utc,
+    is_24h: true,
+    date_format: "%y-%m-%d"
+  ),
+
   TimexDatalinkClient::Protocol3::End.new
 ]
 
