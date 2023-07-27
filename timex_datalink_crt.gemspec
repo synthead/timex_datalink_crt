@@ -17,5 +17,5 @@ Gem::Specification.new do |s|
   ]
 
   s.add_dependency "ruby-sdl2", "~> 0.3.5"
-  s.add_dependency "timex_datalink_client", "~> 0.12.1"
+  s.add_dependency "timex_datalink_client", "~> 0.12.2"
 end
